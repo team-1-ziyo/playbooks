@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+# chrony_commands: {{ chrony_commands|length }}
+{% if chrony_commands|length > 0 %}
+
+{%   for command, value in chrony_commands.items()|sort %}
+{%     if value is sameas true %}
+{{ command }}
+{%     elif value is string or value is number %}
+{{ command }} {{ value }}
+{%     else %}
+{%       for v in value %}
+{{ command }} {{ v }}
+{%       endfor %}
+{%     endif %}
+{%   endfor %}
+{% endif %}

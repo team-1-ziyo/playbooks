@@ -1,0 +1,22 @@
+---
+- name: install initial packages on all boxes
+  hosts: all,!ntpservers
+  remote_user: ansible
+  become: yes
+  
+  tasks:
+  - name: configure chrony
+    template:
+      src: /ansible/templates/chrony.client.j2
+      dest: /etc/chrony.conf
+    notify: 
+      - restart chronyd
+
+  - name: start chronyd
+    service: 
+      name: chronyd 
+      state: started 
+  - name: restart service
+    service:
+      name: chronyd
+      state: restarted

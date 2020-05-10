@@ -1,0 +1,22 @@
+$TTL    1D
+@       IN      SOA     prdx-nsm101.ziyotek1.local. root.prdx-nsm101.ziyotek1.local. (
+                        05092020      ; Serial
+                        1D              ; Refresh
+                        1H              ; Retry
+                        1W              ; Expire
+                        3H )            ; minimum
+
+; name servers NS records
+            IN      NS      prdx-nsm101.ziyotek1.local.
+            IN      NS      prdx-nsw101.ziyotek1.local.
+            IN      NS      prdx-nsw102.ziyotek1.local.
+
+; name servers A records
+prdx-nsm101  IN      A       192.168.32.13
+prdx-nsw101  IN      A       192.168.32.14
+prdx-nsw102  IN      A       192.168.32.15
+; servers
+prdx-ntp101     IN      A   192.168.32.11
+prdx-ntp102     IN      A   192.168.32.12
+prdx-pxe101     IN      A   192.168.32.16
+prdx-ftp101     IN      A   192.168.32.17

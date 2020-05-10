@@ -1,0 +1,31 @@
+---
+- name: install packages on dns boxes
+  hosts: dnsmaster
+  remote_user: ansible
+  become: yes
+  
+  tasks:
+  - name: install packages
+    yum:
+      name: ['bind', 'bind-utils']
+      state: latest
+  - name: configure dns master
+    template:
+      src: /ansible/templates/dns.master.j2
+      dest: /etc/named.conf
+  - name: copying FLZ file
+    template:
+      src: /ansible/templates/ziyotek1.flz.j2
+      dest: /var/named/ziyotek1.flz
+  - name: copying RLZ file
+    template:
+      src: /ansible/templates/ziyotek1.rlz.j2
+      dest: /var/named/ziyotek1.rlz
+    notify: 
+      - restart named
+
+  - name: start named
+    service: 
+      name: named 
+      state: started 
+  
