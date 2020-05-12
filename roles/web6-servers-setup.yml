@@ -9,8 +9,24 @@
     yum:
      name: httpd
      state: latest
+  - name: copy index.html
+    copy:
+      src: /ansible/index.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: '0666'
+  - name: copy assets directory
+    copy:
+      src: /ansible/assets
+      dest: /var/www/html/
+      owner: root
+      group: root
+
+
   - name: start httpd
     service: 
       name: httpd
       state: started
+  
 
