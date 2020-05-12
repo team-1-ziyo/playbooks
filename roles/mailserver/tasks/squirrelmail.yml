@@ -1,0 +1,35 @@
+---
+
+- name: install epel
+  yum:
+    name: epel-release
+    state: present
+    
+- name: install squirrelmail
+  yum:
+    name: squirrelmail
+    state: present
+
+- name: configure squirrelmail
+  template:
+    src: squirrelmail.config.php.j2
+    dest: /etc/squirrelmail/config/config.php
+    owner: root
+    group: apache
+    mode: 640
+
+- name: install apache
+  yum: 
+    name: httpd
+    state: present
+
+- name: configure httpd
+  template: 
+    src: httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+
+- name: start httpd
+  service:
+    name: httpd
+    state: started
+    enabled: true

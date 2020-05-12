@@ -1,8 +1,0 @@
----
-- name: restart chronyd
-  tags: chrony
-  become: true
-  service:
-    name: chronyd
-    state: restarted
-...

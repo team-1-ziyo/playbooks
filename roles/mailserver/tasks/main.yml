@@ -1,0 +1,6 @@
+---
+# tasks file for mailserver
+  
+- include_tasks: postfix.yml
+- include_tasks: dovecot.yml
+- include_tasks: squirrelmail.yml

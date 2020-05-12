@@ -1,0 +1,11 @@
+---
+
+- name : mailserver setup
+  hosts: mailserver
+  remote_user: ansible
+  become: true
+    
+  roles:
+    - mailserver
+
+  

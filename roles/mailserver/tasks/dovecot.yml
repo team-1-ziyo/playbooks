@@ -1,0 +1,32 @@
+---
+
+- name: install dovecot
+  yum:
+    name: dovecot
+    state: present
+
+- name: configure dovecot configuration
+  template:
+    src: dovecot.conf.j2
+    dest: /etc/dovecot/dovecot.conf
+    
+- name: dovecot mail location
+  template: 
+    src: dovecot-10-mail.conf.j2
+    dest: /etc/dovecot/conf.d/10-mail.conf
+
+- name: dovecot auth configuration
+  template: 
+    src: dovecot-auth.conf.j2
+    dest: /etc/dovecot/conf.d/10-auth.conf
+
+- name: dovecot master configuration
+  template:
+   src: dovecot-10-master.conf.j2
+   dest: /etc/dovecot/conf.d/10-master.conf
+
+- name: start and enable dovecot
+  service:
+    name: dovecot
+    state: started
+    enabled: true
