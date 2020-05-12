@@ -1,6 +1,6 @@
 ---
 - name: install packages on dns boxes
-  hosts: dnsmaster
+  hosts: dnsmaster:dnsslave1:dnsslave2
   remote_user: ansible
   become: yes
   
@@ -9,6 +9,17 @@
     yum:
       name: ['bind', 'bind-utils']
       state: latest
+  - name: start named
+    service: 
+      name: named 
+      state: started
+
+- name: setup dns master
+  hosts: dnsmaster
+  remote_user: ansible
+  become: yes
+   
+  tasks:
   - name: configure dns master
     template:
       src: /ansible/templates/dns.master.j2
@@ -27,5 +38,42 @@
   - name: start named
     service: 
       name: named 
-      state: started 
+      state: started
+
+- name: setup dns slave 1
+  hosts: dnsslave1
+  remote_user: ansible
+  become: yes
   
+  tasks:
+  - name: configure dns slave1
+    template:
+      src: /ansible/templates/dns.slave1.j2
+      dest: /etc/named.conf
+    notify: restart named
+  # - name: pull zones from master
+  #   shell:
+  #     cmd: rndc ziyotek1.local; rndc 32.168.192.in-addr.arpa
+  - name: start named
+    service: 
+      name: named 
+      state: started
+    
+- name: setup dns slave 2
+  hosts: dnsslave2
+  remote_user: ansible
+  become: yes
+  
+  tasks:
+  - name: configure dns slave2
+    template:
+      src: /ansible/templates/dns.slave2.j2
+      dest: /etc/named.conf
+    notify: restart named
+  # - name: pull zones from master
+  #   shell:
+  #     cmd: rndc ziyotek1.local; rndc 32.168.192.in-addr.arpa
+  - name: start named
+    service: 
+      name: named 
+      state: started

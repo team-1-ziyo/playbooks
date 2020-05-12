@@ -1,0 +1,52 @@
+---
+- hosts: sambaolegtest
+  remote_user: ansible
+  become: true
+  pre_tasks:
+    - name: Create users
+      user:
+        name: "{{ item }}"
+        groups: users
+        password: $1$EdsmV9c.$tl77HGXYMcmHUm.3O3.cW0
+        append: true
+      with_items:
+        - usr1
+        - usr2
+        
+  vars:
+    
+    samba_log: /var/log/samba.log
+    samba_log_size: 60000
+    samba_log_level: '3 passdb:5 auth:10 winbind:2 '
+
+    samba_map_to_guest: Never
+    samba_users:
+      - name: usr1
+        password: password
+      - name: usr2
+        password: password
+           
+    samba_shares_root: /sambashare
+    samba_shares:
+      - name: restrictedshare
+      - name: privateshare
+        comment: 'Only readable/writeable by group users'
+        valid_users: ['usr1', 'usr2']
+        write_list: +users
+        group: users
+        browseable: 'no'
+      - name: publicshare
+        comment: 'Public share, writeable by all members of group users'
+        public: 'yes'
+        write_list: +users
+        group: users
+        browseable: 'yes'
+      - name: fully public
+        comment: 'Samba public share'
+        public: 'yes'
+        guest_ok: 'yes'
+        writable: 'yes'
+        browseable: 'yes'
+      
+  roles:
+    - bertvv.samba

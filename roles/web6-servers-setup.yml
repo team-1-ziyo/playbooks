@@ -1,0 +1,16 @@
+---
+- name: Install webservers6 packages
+  hosts: webservers6
+  remote_user: ansible
+  become: yes
+
+  tasks:
+  - name: install Apache
+    yum:
+     name: httpd
+     state: latest
+  - name: start httpd
+    service: 
+      name: httpd
+      state: started
+

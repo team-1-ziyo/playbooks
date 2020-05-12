@@ -19,8 +19,8 @@ options {
 	recursing-file  "/var/named/data/named.recursing";
 	secroots-file   "/var/named/data/named.secroots";
 	allow-query     { localhost; 192.168.32.0/24; };
-    allow-transfer  { localhost; 192.168.32.14; 192.168.32.15; }
-    also-notify     { 192.168.32.14; 192.168.32.15; }
+    allow-transfer  { localhost; 192.168.32.14; 192.168.32.15; };
+    also-notify     { 192.168.32.14; 192.168.32.15; };
 
 	/* 
 	 - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
