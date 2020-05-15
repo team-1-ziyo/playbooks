@@ -1,0 +1,14 @@
+---
+- name: install kubernetes master box
+  hosts: kubernetescluster
+  remote_user: ansible
+  become: true
+
+  vars:
+    kubernetes_allow_pods_on_master: false
+
+  roles:
+    # - geerlingguy.pip
+    - geerlingguy.docker
+    - geerlingguy.kubernetes
+

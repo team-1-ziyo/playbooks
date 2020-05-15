@@ -24,3 +24,57 @@
 192.168.32.20
 [loadbalacer6]
 192.168.32.29
+[jenkinsserver]
+192.168.32.41
+[dockermanager]
+192.168.32.38
+[dockerworker1]
+192.168.32.39
+[dockerworker2]
+192.168.32.40
+
+
+
+swarm-01 ansible_ssh_host=192.168.32.38
+swarm-02 ansible_ssh_host=192.168.32.39
+swarm-03 ansible_ssh_host=192.168.32.40
+
+[docker_engine]
+swarm-01
+swarm-02
+swarm-03
+
+[docker_swarm_manager]
+swarm-01 swarm_labels=deploy
+
+[docker_swarm_worker]
+swarm-02 swarm_labels='["libvirt", "docker", "foo", "bar"]'
+swarm-03
+
+#[kubernetescluster]
+#kubernetes_role_master=192.168.32.42
+#kubernetes_role_node=192.168.32.43
+#kubernetes_role_node=192.168.32.44
+
+[kubernetescluster]
+192.168.32.42 kubernetes_role=master
+192.168.32.43 kubernetes_role=node
+192.168.32.44 kubernetes_role=node
+
+# master ansible_ssh_host=192.168.32.42
+# node1 ansible_ssh_host=192.168.32.43
+# node2 ansible_ssh_host=192.168.32.44
+# 
+# [kube-master]
+# master
+# 
+# [etcd]
+# master
+# 
+# [kube-node]
+# master
+# node1
+# node2
+
+[database]
+192.168.32.22

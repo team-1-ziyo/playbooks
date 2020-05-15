@@ -1,0 +1,19 @@
+---
+
+- name: Install docker boxes
+  hosts: dockermanager,dockerworker1,dockerworker2
+  remote_user: ansible
+  become: true
+  
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+    
+- name: "Provision Docker Swarm Cluster"
+  hosts: docker_engine,docker_swarm_manager,docker_swarm_worker
+  remote_user: ansible
+  become: true
+  
+  roles:
+    - { role: atosatto.docker-swarm }

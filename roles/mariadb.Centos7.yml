@@ -1,0 +1,8 @@
+---
+
+- name: install mariadb on Centos7
+  hosts: database
+  remote_user: ansible
+  become: true
+  roles:
+    - mariadb.Centos7

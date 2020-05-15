@@ -1,0 +1,9 @@
+---
+- name: Install Jenkins
+  hosts: jenkinsserver
+  remote_user: ansible
+  become: true
+ 
+  tasks:
+  - import_role:
+      name: jenkins

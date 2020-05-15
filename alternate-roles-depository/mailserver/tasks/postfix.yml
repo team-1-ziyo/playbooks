@@ -1,0 +1,18 @@
+---
+
+- name: install postfix
+  yum:
+    name: postfix
+    state: present
+
+
+- name: insatll postfix configuration
+  template:
+    src: postfix.main.cf.j2
+    dest: /etc/postfix/main.cf
+
+- name: start and enable postfix
+  service: 
+    name: postfix
+    enabled: true
+    state: started
