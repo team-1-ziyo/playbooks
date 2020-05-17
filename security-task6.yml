@@ -1,0 +1,41 @@
+---
+- name: Configure security task from Mamur
+  hosts: webservers6:database6:loadbalancer6
+  remote_user: ansible
+  become: true
+
+  tasks:
+  - name: Install packages
+    yum:
+      name: ['bind-utils', 'man', 'man-pages', 'mlocate', 'sysstat', 'chrony', 'libselinux-python']
+      state: latest
+
+  - name: disable iptables
+    service:
+      name: iptables
+      state: stopped
+      enabled: false
+  
+  - name: Disable SELinux
+    selinux:
+      state: disabled
+  - name: Disable Selinux permanently
+    template:
+      src: /ansible/templates/selinux_config.j2
+      dest: /etc/selinux/config
+      owner: root
+      group: root
+      mode: "0644"
+
+  - name: disable root login  
+    template:
+      src: /ansible/templates/sshd_config.j2
+      dest: /etc/ssh/sshd_config
+      owner: root
+      group: root
+      mode: "0640"
+  
+  - name: Restart sshd daemon
+    service:
+      name: sshd
+      state: restarted

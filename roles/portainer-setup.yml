@@ -5,10 +5,6 @@
   remote_user: ansible
   become: true
 
-  # vars:
-  #   pip_install_packages:
-  #     - name: docker
-  # vars_files:
-  #   - vars/portainer.yml
+  
   roles:
     - { role: shelleg.ansible_role_portainer }

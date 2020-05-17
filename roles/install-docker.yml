@@ -1,0 +1,11 @@
+---
+
+- name: Install docker boxes
+  hosts: dockermanager,dockerworker1,dockerworker2
+  remote_user: ansible
+  become: true
+  
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker

@@ -1,0 +1,16 @@
+---
+- name: Install NFS server 
+  hosts: nfsserver
+  remote_user: ansible
+  become: true
+
+  roles:
+    - { role: 'indigo-dc.nfs', nfs_mode: 'server', nfs_exports: [{path: "/share", export: "*(fsid=0,rw,sync,no_root_squash,insecure)"}] }
+  
+- name: Install NFS client
+  hosts: all:!nfsserver
+  remote_user: ansible
+  become: true
+  
+  roles:
+    - { role: 'indigo-dc.nfs', nfs_mode: 'client', nfs_client_imports: [{ local: "/share", remote: "/share", server_host: "prdx-nfs101" }] }

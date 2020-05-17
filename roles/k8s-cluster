@@ -1,0 +1,4 @@
+[kubernetescluster]
+192.168.32.42 kubernetes_role=master
+192.168.32.43 kubernetes_role=node
+192.168.32.44 kubernetes_role=node

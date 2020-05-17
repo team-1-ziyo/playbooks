@@ -1,0 +1,9 @@
+---
+    
+- name: "Provision Docker Swarm Cluster"
+  hosts: docker_engine,docker_swarm_manager,docker_swarm_worker
+  remote_user: ansible
+  become: true
+  
+  roles:
+    - { role: atosatto.docker-swarm }
