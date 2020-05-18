@@ -1,0 +1,250 @@
+---
+# tasks file for ldap
+
+- name: install epel-release
+  yum: name={{item}} state=present
+  with_items:
+    - epel-release
+ 
+- name: install required packages
+  yum: name={{item}} state=present
+  with_items:
+    - firewalld
+    - ntp
+    - openldap
+    - openldap-clients
+    - openldap-servers
+    - python-ldap
+    - policycoreutils
+    - policycoreutils-python
+    - nss-pam-ldapd
+    - httpd
+    - phpldapadmin
+    - libsemanage-python
+ 
+# - name: start and enable firewall
+#   systemd:
+#     name: firewalld
+#     state: stopped
+#     enabled: false
+ 
+- name: start and enable slapd
+  systemd:
+    name: slapd
+    state: started
+    enabled: yes
+ 
+- name: start and enable httpd
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
+ 
+# - name: Firewall - Open ldap port
+#   firewalld:
+#     service: ldap
+#     permanent: true
+#     state: enabled
+#   notify: restart firewalld
+ 
+# - name: Firewall - Open http port
+#   firewalld:
+#     service: http
+#     permanent: true
+#     state: enabled
+#   notify: restart firewalld
+ 
+# - name: Firewall - Open https port
+#   firewalld:
+#     service: https
+#     permanent: true
+#     state: enabled
+#   notify: restart firewalld
+ 
+- name: generate encrypted server.key
+  command: openssl genrsa -des3 -passout pass:{{ sslpass }} -out /etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.key 2048 -noout creates=/etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.key
+ 
+- name: generate decrpyted server.pem
+  command: openssl rsa -in /etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.key -passin pass:{{ sslpass }} -out /etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.pem creates=/etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.pem
+ 
+- name: generate the certificate request file
+  command: openssl req -new -key /etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.pem -out /etc/openldap/certs/{{ ansible_hostname }}.{{ dc1 }}.{{ dc2 }}.csr -subj "/C={{ c }}/ST={{ st }}/L={{ l }}/O={{ o }}/OU={{ ou }}/CN={{ ansible_hostname }}.{{ dc1 }}.{{ dc2 }}/emailAddress={{ email }}" creates=/etc/openldap/certs/{{ ansible_hostname }}.{{ dc1 }}.{{ dc2 }}.csr
+ 
+- name: create the host certificate
+  command: openssl x509 -req -days 3650 -in /etc/openldap/certs/{{ ansible_hostname }}.{{ dc1 }}.{{ dc2 }}.csr -signkey /etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.pem -out /etc/openldap/certs/{{ ansible_hostname }}.crt creates=/etc/openldap/certs/{{ ansible_hostname }}.crt
+ 
+- name: copy phpldapadmin config.php
+  template:
+    src: config.j2
+    dest: /etc/phpldapadmin/config.php
+  notify: restart httpd
+ 
+- name: copy phpldapadmin.conf for apache
+  template:
+    src: phpldapadmin.j2
+    dest: /etc/httpd/conf.d/phpldapadmin.conf
+  notify: restart httpd
+ 
+- name: create ldif staging directory
+  file:
+    path: /etc/openldap/ldifs
+    state: directory
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: create scripts staging directory
+  file:
+    path: /etc/openldap/scripts
+    state: directory
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: create admin scripts staging directory
+  file:
+    path: /etc/openldap/scripts/admin
+    state: directory
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: copy the create user script to ldap1 server
+  template:
+    src: create_user_ldp1.j2
+    dest: /etc/openldap/scripts/admin/create_user.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+  # when: ansible_hostname == "{{ ldap_server.ldp1 }}"
+ 
+# - name: copy the create user script to ldap2 server
+#   template:
+#     src: create_user_ldp2.j2
+#     dest: /etc/openldap/scripts/admin/create_user.sh
+#     owner: ldap
+#     group: ldap
+#     mode: 0775
+#   when: ansible_hostname == "{{ ldap_server.ldp2 }}"
+ 
+- name: copy the user uid counter script
+  copy:
+    src: user_uid_counter.sh
+    dest: /etc/openldap/scripts/admin/user_uid_counter.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: copy the create groups script to ldap1 server
+  template:
+    src: create_group_ldp1.j2
+    dest: /etc/openldap/scripts/admin/create_group.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+#   when: ansible_hostname == "{{ ldap_server.ldp1 }}"
+ 
+# - name: copy the create groups script to ldap2 server
+#   template:
+#     src: create_group_ldp2.j2
+#     dest: /etc/openldap/scripts/admin/create_group.sh
+#     owner: ldap
+#     group: ldap
+#     mode: 0775
+#   when: ansible_hostname == "{{ ldap_server.ldp2 }}"
+ 
+- name: copy the group gid counter script
+  copy:
+    src: group_gid_counter.sh
+    dest: /etc/openldap/scripts/admin/group_gid_counter.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: copy the base ldif directory structure script
+  template:
+    src: ldif_base.j2
+    dest: /etc/openldap/scripts/ldif_base.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: run base ldif script
+  command: /etc/openldap/scripts/ldif_base.sh creates=/etc/openldap/ldifs/base_complete
+  notify: restart slapd
+ 
+- name: copy mod_ssl script to enable StartTLS
+  template:
+    src: mod_ssl.j2
+    dest: /etc/openldap/scripts/mod_ssl.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: enable mod_ssl
+  command: /etc/openldap/scripts/mod_ssl.sh creates=/etc/openldap/ldifs/{{ ansible_hostname }}_ssl_complete
+  notify: restart slapd
+ 
+- name: copy sync overlay script
+  copy:
+    src: sync_overlay.sh
+    dest: /etc/openldap/scripts/sync_overlay.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: enable sync overlay
+  command: /etc/openldap/scripts/sync_overlay.sh creates=/etc/openldap/ldifs/sync_overlay_complete
+  notify: restart slapd
+ 
+- name: copy replication configuration script
+  template:
+    src: ld1_replication.j2
+    dest: /etc/openldap/scripts/replication.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+#   when: ansible_hostname == "{{ ldap_server.ldp1 }}"
+ 
+# - name: copy replication configuration script
+#   template:
+#     src: ld2_replication.j2
+#     dest: /etc/openldap/scripts/replication.sh
+#     owner: ldap
+#     group: ldap
+#     mode: 0775
+#   when: ansible_hostname == "{{ ldap_server.ldp2 }}"
+ 
+- name: enable replication
+  command: /etc/openldap/scripts/replication.sh creates=/etc/openldap/ldifs/{{ ansible_hostname }}_rep_complete
+  notify: restart slapd
+ 
+# - name: SELinux allow ldap connections
+#   seboolean:
+#     name: allow_ypbind
+#     state: no
+#     persistent: yes
+ 
+# - name: SELinux allow nsswitch ldap
+#   seboolean:
+#     name: authlogin_nsswitch_use_ldap
+#     state: no
+#     persistent: yes
+ 
+# - name: SELinux allow phpldapadmin to connect to ldap
+#   seboolean:
+#     name: httpd_can_connect_ldap
+#     state: yes
+#     persistent: yes
+ 
+- name: copy logging script
+  copy:
+    src: logging.sh
+    dest: /etc/openldap/scripts/logging.sh
+    owner: ldap
+    group: ldap
+    mode: 0775
+ 
+- name: enable logging
+  command: /etc/openldap/scripts/logging.sh creates=/etc/openldap/scripts/logging_enabled
+  notify: restart rsyslog

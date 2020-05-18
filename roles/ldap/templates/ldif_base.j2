@@ -1,0 +1,111 @@
+#!/bin/bash
+cpass={{ lpass }}
+epass=$( bash <<EOF
+slappasswd -s {{ lpass }}
+EOF
+)
+
+cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
+chown -R ldap:ldap /var/lib/ldap
+
+#mkdir /etc/openldap/ldifs
+chown -R ldap:ldap /etc/openldap/ldifs
+chmod 0775 /etc/openldap/ldifs
+
+touch /etc/openldap/ldifs/ldaprootpwd.ldif
+cat > /etc/openldap/ldifs/ldaprootpwd.ldif <<EOF
+dn: olcDatabase={0}config,cn=config
+changetype: modify
+add: olcRootPW
+olcRootPW: ${epass}
+EOF
+
+ldapadd -H ldapi:/// -f /etc/openldap/ldifs/ldaprootpwd.ldif
+
+touch /etc/openldap/ldifs/domain.ldif
+cat > /etc/openldap/ldifs/domain.ldif <<EOF
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcSuffix
+olcSuffix: dc={{ dc1 }},dc={{ dc2 }}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootDN
+olcRootDN: cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: ${epass}
+EOF
+
+touch /etc/openldap/ldifs/monitor.ldif
+cat > /etc/openldap/ldifs/monitor.ldif <<EOF
+dn: olcDatabase={1}monitor,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" read by dn.base="cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }}" read by * none
+EOF
+
+touch /etc/openldap/ldifs/ou.ldif
+cat > /etc/openldap/ldifs/ou.ldif <<EOF
+dn: dc={{ dc1 }},dc={{ dc2 }}
+dc: {{ dc1 }}
+objectClass: top
+objectClass: domain
+
+dn: ou=People,dc={{ dc1 }},dc={{ dc2 }}
+ou: People
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Groups,dc={{ dc1 }},dc={{ dc2 }}
+ou: Group
+objectClass: top
+objectClass: organizationalUnit
+EOF
+
+touch /etc/openldap/ldifs/ppolicymodule.ldif
+cat > /etc/openldap/ldifs/ppolicymodule.ldif <<EOF
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+olcModulePath: /usr/lib64/openldap
+olcModuleLoad: ppolicy.la
+EOF
+
+touch /etc/openldap/ldifs/ppolicyoverlay.ldif
+cat > /etc/openldap/ldifs/ppolicyoverlay.ldif <<EOF
+dn: olcOverlay=ppolicy,olcDatabase={2}hdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcPPolicyConfig
+olcOverlay: ppolicy
+olcPPolicyDefault: cn=passwordDefault,ou=Policies,dc={{ dc1 }},dc={{ dc2 }}
+olcPPolicyHashCleartext: FALSE
+olcPPOlicyUseLockout: FALSE
+olcPPolicyForwardUpdates: FALSE
+EOF
+
+touch /etc/openldap/ldifs/uPassword.ldif
+cat > /etc/openldap/ldifs/uPassword.ldif <<EOF
+dn: olcDatabase={2}hdb,cn=config
+add: olcAccess
+olcAccess: {0}to attrs=userPassword by self write by dn.base="cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }}" write by anonymous auth by * none
+-
+add: olcAccess
+olcAccess: {1}to * by dn.base="cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }}" write by self write by * read
+EOF
+
+ldapadd -H ldapi:/// -f /etc/openldap/schema/cosine.ldif
+ldapadd -H ldapi:/// -f /etc/openldap/schema/nis.ldif
+ldapadd -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/ppolicy.ldif
+ldapmodify -H ldapi:/// -f /etc/openldap/ldifs/domain.ldif
+ldapmodify -H ldapi:/// -f /etc/openldap/ldifs/monitor.ldif
+ldapadd -x -w {{ lpass }} -D cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }} -f /etc/openldap/ldifs/ou.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/ldifs/ppolicymodule.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/ldifs/ppolicyoverlay.ldif
+ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/ldifs/uPassword.ldif
+
+touch /etc/openldap/ldifs/base_complete

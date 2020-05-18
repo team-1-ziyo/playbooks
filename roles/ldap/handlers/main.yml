@@ -1,0 +1,21 @@
+---
+# handlers file for ldap
+- name: restart httpd
+  systemd:
+    name: httpd
+    state: restarted
+
+- name: restart slapd
+  systemd:
+    name: slapd
+    state: restarted
+
+- name: restart firewalld
+  systemd:
+    name: firewalld
+    state: restarted
+
+- name: restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+touch /etc/openldap/ldifs/{{ ansible_hostname }}_replication.ldif
+cat > /etc/openldap/ldifs/{{ ansible_hostname }}_replication.ldif <<EOF
+dn: cn=config
+changetype: modify
+replace: olcServerID
+olcServerID: 1
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+add: olcSyncRepl
+olcSyncRepl: rid=001
+  provider=ldap://{{ ldap_server.ldp2 }}:389/
+  bindmethod=simple
+  binddn="cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }}"
+  credentials={{ lpass }}
+  searchbase="dc={{ dc1 }},dc={{ dc2 }}"
+  scope=sub
+  schemachecking=on
+  type=refreshAndPersist
+  retry="30 5 300 3"
+  interval=00:00:05:00
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
+
+dn: olcOverlay=syncprov,olcDatabase={2}hdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+EOF
+
+ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/ldifs/{{ ansible_hostname }}_replication.ldif
+
+touch /etc/openldap/ldifs/{{ ansible_hostname }}_rep_complete

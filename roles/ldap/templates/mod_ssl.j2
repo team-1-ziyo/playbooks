@@ -1,0 +1,23 @@
+#!/bin/bash
+
+cp /etc/pki/tls/certs/ca-bundle.crt /etc/openldap/certs
+chown ldap:ldap /etc/openldap/certs/ca-bundle.crt
+
+touch /etc/openldap/ldifs/{{ ansible_hostname }}_mod_ssl.ldif
+cat > /etc/openldap/ldifs/{{ ansible_hostname }}_mod_ssl.ldif <<EOF
+dn: cn=config
+changetype: modify
+add: olcTLSCACertificateFile
+olcTLSCACertificateFile: /etc/openldap/certs/ca-bundle.crt
+-
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/certs/{{ ansible_hostname }}.crt
+-
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/openldap/certs/{{ dc1 }}.{{ dc2 }}.pem
+EOF
+
+ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/openldap/ldifs/{{ ansible_hostname }}_mod_ssl.ldif
+authconfig --enableldaptls --update
+
+touch /etc/openldap/ldifs/{{ ansible_hostname }}_ssl_complete

@@ -1,0 +1,52 @@
+#!/bin/bash
+source ./user_uid_counter.sh
+
+user=$1
+uid=${counter}
+
+echo -n "Enter username: "
+read user
+echo -n "Enter First Name: "
+read ufname
+echo -n "Enter Last Name: "
+read ulname
+echo -n "Enter primary gid: "
+read gid
+echo -n "Create password for user: "
+read -s cpass
+
+epass=$( bash <<EOF
+slappasswd -s ${cpass}
+EOF
+)
+
+function incCounter {
+  let uid=uid+1
+}
+
+incCounter ${uid}
+
+touch /etc/openldap/ldifs/${user}.ldif
+cat > /etc/openldap/ldifs/${user}.ldif <<EOF
+dn: cn=${ufname} ${ulname},ou=People,dc={{ dc1 }},dc={{ dc2 }}
+cn: ${ufname} ${ulname}
+gidnumber: ${gid}
+givenname: ${ufname}
+homedirectory: /home/users/${user}
+loginshell: /bin/bash
+objectclass: inetOrgPerson
+objectclass: posixAccount
+objectclass: top
+sn: ${ulname}
+uid: ${user}
+uidnumber: ${uid}
+userpassword: ${epass}
+EOF
+
+ldapadd -x -W -D "cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }}" -f /etc/openldap/ldifs/${user}.ldif
+
+sed -i "s/counter=${counter}/counter=${uid}/g" ./user_uid_counter.sh
+
+echo "${user}=${uid}" >> ./user_uid_counter.sh
+
+scp ./user_uid_counter.sh {{ ldap_server.ldp1 }}:/etc/openldap/scripts/admin/

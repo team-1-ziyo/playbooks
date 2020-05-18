@@ -1,0 +1,17 @@
+---
+# vars file for ldap
+ldap_server:
+  ldp1: ldapserver
+  ldp2: 
+sslpass: password
+ladmin: ldapadmin
+lpass: password
+dc1: ziyotek1
+dc2: local
+c: US
+st: Virginia
+l: Vienna
+o: ZiyoTek
+ou: IT
+email: ldapadmin@ziyotek1.local
+subnet1: 192.168.32.0/24

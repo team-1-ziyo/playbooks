@@ -1,0 +1,27 @@
+#!/bin/bash
+source ./group_gid_counter.sh
+group=$1
+gid=${counter}
+
+function incCounter {
+  let gid=gid+1
+}
+
+incCounter ${gid}
+
+touch /etc/openldap/ldifs/${group}.ldif
+
+cat > /etc/openldap/ldifs/${group}.ldif <<EOF
+dn: cn=${group},ou=Groups,dc={{ dc1 }},dc={{ dc2 }}
+cn: ${group}
+gidnumber: ${gid}
+objectclass: posixGroup
+objectclass: top
+EOF
+
+ldapadd -x -W -D "cn={{ ladmin }},dc={{ dc1 }},dc={{ dc2 }}" -f /etc/openldap/ldifs/${group}.ldif
+
+sed -i "s/counter=${counter}/counter=${gid}/g" ./group_gid_counter.sh
+
+echo "${group}=${gid}" >> ./group_gid_counter.sh
+scp ./group_gid_counter.sh {{ ldap_server.ldp2 }}:/etc/openldap/scripts/admin/

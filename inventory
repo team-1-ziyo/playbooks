@@ -48,6 +48,12 @@ prdx-lb161
 [loadbalancer7]
 prdx-lb171
 
+[nagiosserver]
+prdx-nagios101
+
+[ldapserver]
+prdx-ldap101
+
 [ansibleserver]
 prdx-ansible101
 
@@ -74,5 +80,5 @@ prdx-kubew201
 
 
 
-[database]
-192.168.32.22
+# [database]
+# 192.168.32.22

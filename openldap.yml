@@ -1,0 +1,14 @@
+---
+
+- name: Configuring ldap server
+  hosts: database
+  remote_user: ansible
+  become: true
+
+  tasks:
+    - name: Update packages
+      yum:
+        name: '*'
+        state: latest
+  roles:
+    - ldap
