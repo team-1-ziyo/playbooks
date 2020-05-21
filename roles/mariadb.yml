@@ -1,0 +1,8 @@
+---
+
+- name: install mariadb 
+  hosts: database
+  remote_user: ansible
+  become: true
+  roles:
+    - mariadb

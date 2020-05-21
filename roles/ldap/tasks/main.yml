@@ -6,21 +6,26 @@
   with_items:
     - epel-release
  
+- name: update all package
+  yum:
+    name: '*'
+    state: latest
+
 - name: install required packages
-  yum: name={{item}} state=present
-  with_items:
-    - firewalld
-    - ntp
-    - openldap
-    - openldap-clients
-    - openldap-servers
-    - python-ldap
-    - policycoreutils
-    - policycoreutils-python
-    - nss-pam-ldapd
-    - httpd
-    - phpldapadmin
-    - libsemanage-python
+  yum:
+    name: ['openldap', 'openldap-clients', 'openldap-servers', 'python-ldap', 'policycoreutils', 'policycoreutils-python', 'nss-pam-ldapd', 'httpd', 'phpldapadmin', 'libsemanage-python']
+    state: latest
+#  with_items:
+#    - openldap
+#    - openldap-clients
+#    - openldap-servers
+#    - python-ldap
+#    - policycoreutils
+#    - policycoreutils-python
+#    - nss-pam-ldapd
+#    - httpd
+#    - phpldapadmin
+#    - libsemanage-python
  
 # - name: start and enable firewall
 #   systemd:
