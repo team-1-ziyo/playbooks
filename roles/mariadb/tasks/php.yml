@@ -1,0 +1,17 @@
+---
+
+- name: php install
+  yum:
+    name: httpd, php, phpmyadmin
+    state: present
+
+- name: configure 'phpmyadmin'
+  template:
+    src: phpMyAdmin.conf.j2
+    dest: /etc/httpd/conf.d/phpMyAdmin.conf
+
+- name: restart services
+  service: 
+    name: httpd
+    state: started
+    enabled: true
