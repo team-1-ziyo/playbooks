@@ -1,15 +1,15 @@
 ---
-- name: Install NFS server 
-  hosts: nfsserver
-  remote_user: ansible
-  become: true
+# - name: Install NFS server 
+#   hosts: nfsserver
+#   remote_user: ansible
+#   become: true
 
-  roles:
-    - { role: 'indigo-dc.nfs', nfs_mode: 'server', nfs_exports: [{path: "/share", export: "*(fsid=0,rw,sync,no_root_squash,insecure)"}] }
-    - { role: 'indigo-dc.nfs', nfs_mode: 'server', nfs_exports: [{path: "/uhome", export: "*(rw,sync,no_root_squash,insecure)"}] }
+#   roles:
+#     - { role: 'indigo-dc.nfs', nfs_mode: 'server', nfs_exports: [{path: "/share", export: "*(fsid=0,rw,sync,no_root_squash,insecure)"}] }
+#     - { role: 'indigo-dc.nfs', nfs_mode: 'server', nfs_exports: [{path: "/uhome", export: "*(rw,sync,no_root_squash,insecure)"}] }
   
 - name: Install NFS client
-  hosts: all:!nfsserver
+  hosts: mailserver:database6:database7:nagiosserver
   remote_user: ansible
   become: true
   

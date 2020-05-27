@@ -1,6 +1,6 @@
 ---
 - name: Configure autofs and Ldap on clients
-  hosts: all
+  hosts: nagiosserver:database7:database6:mailserver:nfsserver
   remote_user: ansible
   become: true
 

@@ -1,0 +1,48 @@
+THIS IS FOR ANIMATION
+
+#!/bin/bash
+yum install -y httpd git
+
+cd /var/www/html
+wget https://project-s3-bucket.s3.amazonaws.com/first_linux.gif
+wget https://project-s3-bucket.s3.amazonaws.com/index.html.foranimation.txt
+
+mv /var/www/html/index.html.foranimation.txt /var/www/html/index.html
+
+mkdir /var/www/html/animation
+cp /var/www/html/first_linux.gif /var/www/html/animation
+cp /var/www/html/index.html /var/www/html/animation
+
+sudo systemctl start httpd
+sudo systemctl enable httpd
+sudo usermod -a -G apache ec2-user
+sudo chown -R ec2-user:apache /var/www
+sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \;
+sudo find /var/www -type f -exec sudo chmod 0664 {} \;
+
+
+THIS IS FOR VIDEO
+
+#!/bin/bash
+yum install -y httpd git
+
+cd /var/www/html
+wget https://project-s3-bucket.s3.amazonaws.com/Video_for_S3_bucket.mp4
+wget https://project-s3-bucket.s3.amazonaws.com/index.html.forvideo.txt
+
+mv /var/www/html/index.html.forvideo.txt /var/www/html/index.html
+
+mkdir /var/www/html/video
+cp /var/www/html/Video_for_S3_bucket.mp4 /var/www/html/video
+cp /var/www/html/index.html /var/www/html/video
+
+
+sudo systemctl start httpd
+sudo systemctl enable httpd
+sudo usermod -a -G apache ec2-user
+sudo chown -R ec2-user:apache /var/www
+sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \;
+sudo find /var/www -type f -exec sudo chmod 0664 {} \;
+
+
+

@@ -2,7 +2,7 @@
 # YOU CAN ONLY RUN THIS PLAYBOOK ONCE, BCZ IT WILL KEEP APPENDING /ETC/FSTAB AND YOU DON'T WANT ANY EXTRA HEADACHE
 # THIS WILL WORK FOR CENTOS 6
 - name: Configure samba clients 
-  hosts: database6:webservers6:loadbalancer6
+  hosts: database6
   remote_user: ansible
   become: true
 

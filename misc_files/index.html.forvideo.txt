@@ -1,0 +1,7 @@
+<HTML>
+<HEAD> <TITLE>TEAM 1</TITLE> </HEAD>
+<BODY>
+<h1>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="text-decoration: underline; background-color: #008000;"><strong>&nbsp;VIDEO&nbsp;</strong></span></h1>
+<EMBED SRC="Video_for_S3_bucket.mp4" WIDTH="1080" HEIGHT="720" AUTOPLAY="TRUE" LOOP="true"></EMBED>
+</BODY>
+</HTML>

@@ -1,0 +1,7 @@
+<HTML>
+<HEAD> <TITLE>TEAM 1</TITLE> </HEAD>
+<BODY>
+<h1>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span style="text-decoration: underline;"><span style="background-color: #ff0000;"><strong> Animation&nbsp;</strong></span></span></h1>
+  <IMG SRC="first_linux.gif">
+</BODY>
+</HTML>
