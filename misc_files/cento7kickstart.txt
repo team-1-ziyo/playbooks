@@ -1,0 +1,78 @@
+#version=DEVEL
+
+#Firewall configuration
+firewall --disabled
+
+# Install OS instead of upgrade install
+install
+
+# Use FTP installation media
+url --url="ftp://192.168.32.17/pub/centos7"
+
+# Root password
+rootpw --iscrypted $1$5HDbpivB$w73nZFPoY/djcb6HVvp4P.
+
+# Users
+user --name=admin --iscrypted --password=$1$5HDbpivB$w73nZFPoY/djcb6HVvp4P.
+user --name=ansible --iscrypted --password=$1$5HDbpivB$w73nZFPoY/djcb6HVvp4P.
+
+# Network configurations (nameservers could be specified ex: --nameserver=192.168.1.1,192.168.1.2
+# network --bootproto=dhcp
+# --ip=192.168.1.240 --netmask=255.255.255.0 --gateway=192.168.1.1 --nameserver=8.8.8.8 --hostname prdx-test101.ziyotek.local
+
+# System authorization information
+auth useshadow passalgo=sha512
+
+# Use graphical install graphical
+firstboot disable
+
+#System keyboard
+keyboard us
+
+#System language
+lang en_US
+
+#SELinux configuration
+selinux disabled
+
+#Reboot after installation
+reboot
+
+#Installation logging level
+logging level=info
+
+#System timezone
+timezone "America/New_York"
+
+#System bootloader configuration
+bootloader location=mbr
+clearpart --all --initlabel
+autopart --type=lvm
+
+#System Services
+services --enabled="chronyd"
+
+#Packages to install
+%packages
+@^minimal
+@core
+chrony
+%end
+
+%addon com_redhat_kdump --disable --reserve-mb='auto'
+%end
+
+%post
+
+yum install -y bind-utils man man-pages mlocate sysstat wget
+echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/sudousers
+echo "admin ALL=(ALL) ALL" >> /etc/sudoers.d/sudousers
+sed -i "s/^\#PermitRootLogin.*/PermitRootLogin no/" /etc/ssh/sshd_config
+
+# Extra needed files could be downloaded as follows
+# cd /root
+# wget ftp://192.168.1.150/pub1/file22
+
+%end
+
+
