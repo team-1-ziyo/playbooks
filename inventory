@@ -24,7 +24,8 @@ prdx-nfs101
 prdx-samba101
 
 [mailserver]
-prdx-mail101
+# prdx-mail101
+192.168.32.170
 
 [database6]
 prdx-db161
@@ -82,5 +83,6 @@ prdx-kubew201
 
 [database]
 192.168.32.171
+192.168.32.170
 
 

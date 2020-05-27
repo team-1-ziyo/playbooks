@@ -1,2 +1,11 @@
 ---
 # handlers file for mailserver
+- name: restart postfix
+  service:
+    name: postfix
+    state: restarted
+
+- name: restart dovecot
+  service:
+    name: dovecot
+    state: restarted

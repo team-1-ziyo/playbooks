@@ -1,0 +1,6 @@
+---
+- hosts: nagiosserver
+  remote_user: ansible
+  become: true
+  roles:
+     - { role: networklore.nagios }

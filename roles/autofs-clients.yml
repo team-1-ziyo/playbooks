@@ -1,0 +1,9 @@
+---
+- name: Configure autofs and Ldap on clients
+  hosts: all
+  remote_user: ansible
+  become: true
+
+  
+  roles:
+    - autofs-client

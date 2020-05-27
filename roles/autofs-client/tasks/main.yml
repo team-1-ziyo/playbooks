@@ -1,0 +1,31 @@
+---
+# tasks file for autofs-client
+  - name: Install packages for autofs
+    yum:
+      name: ['nfs-utils', 'autofs']
+      state: latest
+
+  - name: Install packeges for ldap
+    yum:
+      name: ['openldap-clients', 'nss-pam-ldapd', 'authconfig']
+      state: latest
+
+  - name: Congigure authconfig
+    shell:
+      cmd: authconfig --enableldap --enableldapauth --ldapserver=prdx-ldap101.ziyotek1.local --ldapbasedn="dc=ziyotek1,dc=local" --enableldaptls --ldaploadcacert=http://prdx-ldap101/CA.crt --enablemkhomedir --update
+
+  - name: Append auto.master file
+    template:
+      src: auto.master.j2
+      dest: /etc/auto.master
+
+  - name: Copy auto.home file
+    template:
+      src: auto.home.j2
+      dest: /etc/auto.home
+
+  - name: Start and enable autofs
+    service:
+      name: autofs
+      state: started
+      enabled: true

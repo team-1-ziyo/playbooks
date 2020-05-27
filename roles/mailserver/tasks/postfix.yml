@@ -10,7 +10,7 @@
   template:
     src: postfix.main.cf.j2
     dest: /etc/postfix/main.cf
-
+ 
 - name: start and enable postfix
   service: 
     name: postfix

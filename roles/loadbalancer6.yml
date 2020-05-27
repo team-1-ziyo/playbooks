@@ -1,6 +1,6 @@
 ---
 - name : load balancer 6 setup
-  hosts: loadbalacer6
+  hosts: loadbalancer6
   remote_user: ansible
   become: true
     

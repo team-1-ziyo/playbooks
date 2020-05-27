@@ -1,0 +1,8 @@
+---
+- name : load balancer 7 setup
+  hosts: loadbalancer7
+  remote_user: ansible
+  become: true
+    
+  roles:
+    - loadbal7

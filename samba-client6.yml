@@ -1,0 +1,28 @@
+---
+# YOU CAN ONLY RUN THIS PLAYBOOK ONCE, BCZ IT WILL KEEP APPENDING /ETC/FSTAB AND YOU DON'T WANT ANY EXTRA HEADACHE
+# THIS WILL WORK FOR CENTOS 6
+- name: Configure samba clients 
+  hosts: database6:webservers6:loadbalancer6
+  remote_user: ansible
+  become: true
+
+  tasks:
+  - name: install packages
+    yum:
+      name: ['samba-client', 'cifs-utils']
+      state: latest
+
+  - name: create directory /clients give permimssions
+    file:
+      path: /client
+      state: directory
+      mode: '777'
+      # owner: 'root:root'
+
+  - name: append /etc/fstab
+    lineinfile:
+      path: /etc/fstab
+      line: //prdx-samba101/fully_public /client/ cifs user=admin,password=password,sec=ntlmssp 0 0
+
+  - name: mount a samba share 
+    shell: mount -a 

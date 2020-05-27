@@ -253,3 +253,7 @@
 - name: enable logging
   command: /etc/openldap/scripts/logging.sh creates=/etc/openldap/scripts/logging_enabled
   notify: restart rsyslog
+
+# - name: copy file with certificate
+#   shell: cp -a /etc/openldap/certs/prdx-ldap101.crt /var/www/html/prdx-ldap101.crt
+#   notify: restart httpd

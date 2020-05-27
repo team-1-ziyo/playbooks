@@ -1,5 +1,5 @@
 ---
-- hosts: sambaolegtest
+- hosts: sambaserver
   remote_user: ansible
   become: true
   pre_tasks:

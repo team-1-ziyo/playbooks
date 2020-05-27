@@ -1,6 +1,6 @@
 ---
 - name: Install webservers6 packages
-  hosts: webservers6
+  hosts: webservers6:webservers7
   remote_user: ansible
   become: yes
 

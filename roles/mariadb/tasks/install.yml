@@ -7,7 +7,7 @@
     description: Official MariaDB repository
     baseurl: "http://{{ mariadb_mirror }}/{{ mariadb_version }}/rhel{{ ansible_distribution_major_version }}-amd64"
     gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
-    gpgcheck: true
+    gpgcheck: false
   tags: mariadb
 
 - name: Install packages

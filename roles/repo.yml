@@ -1,7 +1,0 @@
----
-- name: Repo
-  hosts: database
-  remote_user: ansible
-  become: true
-  roles:
-    - repo

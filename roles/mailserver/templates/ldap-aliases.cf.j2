@@ -1,0 +1,15 @@
+bind = no    
+version = 3    
+timeout = 20    
+## set the size_limit to 1 since we only    
+## want to find one email address match    
+size_limit = 1    
+expansion_limit = 0    
+start_tls = yes    
+tls_require_cert = no    
+server_host = ldap://prdx-ldap101.ziyotek1.local
+search_base = ou=users,dc=ziyotek1,dc=local    
+scope = sub    
+query_filter = (mail=%s)    
+result_attribute = mgrpDeliverTo    
+special_result_filter = %s@%d 

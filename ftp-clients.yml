@@ -1,0 +1,16 @@
+---
+- name: Prepare ftp hosts to log in to ftp server
+  hosts: all:!ftpserver:!ntpservers
+  remote_user: ansible
+  become: true
+
+  tasks:
+  - name: install ftp package
+    yum:
+      name: 'ftp'
+      state: latest
+
+  - name: create ftpuser
+    user:
+      name: ftpuser
+      password: '$1$4erBqoPI$NmyzKPBMzWXs2XBqONjPj0'
