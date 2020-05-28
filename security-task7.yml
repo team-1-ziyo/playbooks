@@ -1,6 +1,6 @@
 ---
 - name: Configure security task from Mamur
-  hosts: all:!webservers6:!database6:!loadbalancer6
+  hosts: testdns # all:!webservers6:!database6:!loadbalancer6
   remote_user: ansible
   become: true
 
@@ -10,11 +10,11 @@
       name: ['bind-utils', 'man', 'man-pages', 'mlocate', 'sysstat', 'chrony', 'libselinux-python']
       state: latest
 
-  - name: disable firewall
-    service:
-      name: firewalld
-      state: stopped
-      enabled: false
+  # - name: disable firewall
+  #   service:
+  #     name: firewalld
+  #     state: stopped
+  #     enabled: false
   
   - name: Disable SELinux
     selinux:

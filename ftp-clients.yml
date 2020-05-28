@@ -1,6 +1,6 @@
 ---
 - name: Prepare ftp hosts to log in to ftp server
-  hosts: database6:database7:mailserver
+  hosts: testdns #database6:database7:mailserver
   remote_user: ansible
   become: true
 

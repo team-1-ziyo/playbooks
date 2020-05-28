@@ -2,7 +2,7 @@
 # YOU CAN ONLY RUN THIS PLAYBOOK ONCE, BCZ IT WILL KEEP APPENDING /ETC/FSTAB AND YOU DON'T WANT ANY EXTRA HEADACHE
 # WORKS ONLY FOR CENTOS 7
 - name: Configure samba clients 
-  hosts: database7 # all:!sambaserver
+  hosts: testdns # database7 # all:!sambaserver
   remote_user: ansible
   become: true
 

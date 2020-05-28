@@ -1,6 +1,6 @@
 ---
 - name: install packages on dns boxes
-  hosts: dnsmaster:dnsslave1:dnsslave2
+  hosts: testdns
   remote_user: ansible
   become: yes
   
@@ -15,7 +15,7 @@
       state: started
 
 - name: setup dns master
-  hosts: dnsmaster
+  hosts: testdns
   remote_user: ansible
   become: yes
    
@@ -32,48 +32,48 @@
     template:
       src: /ansible/templates/ziyotek1.rlz.j2
       dest: /var/named/ziyotek1.rlz
-    notify: 
-      - restart named
+    # notify: 
+    #   - restart named
 
   - name: start named
     service: 
       name: named 
       state: started
 
-- name: setup dns slave 1
-  hosts: dnsslave1
-  remote_user: ansible
-  become: yes
+# - name: setup dns slave 1
+#   hosts: dnsslave1
+#   remote_user: ansible
+#   become: yes
   
-  tasks:
-  - name: configure dns slave1
-    template:
-      src: /ansible/templates/dns.slave1.j2
-      dest: /etc/named.conf
-    notify: restart named
-  # - name: pull zones from master
-  #   shell:
-  #     cmd: rndc ziyotek1.local; rndc 32.168.192.in-addr.arpa
-  - name: start named
-    service: 
-      name: named 
-      state: started
+#   tasks:
+#   - name: configure dns slave1
+#     template:
+#       src: /ansible/templates/dns.slave1.j2
+#       dest: /etc/named.conf
+#     notify: restart named
+#   # - name: pull zones from master
+#   #   shell:
+#   #     cmd: rndc ziyotek1.local; rndc 32.168.192.in-addr.arpa
+#   - name: start named
+#     service: 
+#       name: named 
+#       state: started
     
-- name: setup dns slave 2
-  hosts: dnsslave2
-  remote_user: ansible
-  become: yes
+# - name: setup dns slave 2
+#   hosts: dnsslave2
+#   remote_user: ansible
+#   become: yes
   
-  tasks:
-  - name: configure dns slave2
-    template:
-      src: /ansible/templates/dns.slave2.j2
-      dest: /etc/named.conf
-    notify: restart named
-  # - name: pull zones from master
-  #   shell:
-  #     cmd: rndc ziyotek1.local; rndc 32.168.192.in-addr.arpa
-  - name: start named
-    service: 
-      name: named 
-      state: started
+#   tasks:
+#   - name: configure dns slave2
+#     template:
+#       src: /ansible/templates/dns.slave2.j2
+#       dest: /etc/named.conf
+#     notify: restart named
+#   # - name: pull zones from master
+#   #   shell:
+#   #     cmd: rndc ziyotek1.local; rndc 32.168.192.in-addr.arpa
+#   - name: start named
+#     service: 
+#       name: named 
+#       state: started

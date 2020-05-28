@@ -1,6 +1,6 @@
 ---
 - name: install initial packages on all boxes
-  hosts: database6:database7:mailserver:nagiosserver
+  hosts: testdns # database6:database7:mailserver:nagiosserver
   remote_user: ansible
   become: yes
   
